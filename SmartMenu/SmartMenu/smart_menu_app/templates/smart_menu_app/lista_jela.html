@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Menu - Lista Jela</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #ff6f3c;
+            --primary-dark: #e85d2c;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+        }
+        body {
+            background-image: url("https://img.freepik.com/free-photo/top-view-fast-food-mix-mozzarella-sticks-club-sandwich-hamburger-mushroom-pizza-caesar-shrimp-salad-french-fries-ketchup-mayo-cheese-sauces-table_141793-3998.jpg?semt=ais_hybrid&w=740&q=80");
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar-custom { background: rgba(255, 111, 60, 0.85); backdrop-filter: blur(12px); padding: 0.8rem 0; }
+        .navbar-brand { color: white !important; font-weight: 700; font-size: 1.8rem; }
+        .nav-btn { background: white; color: var(--primary); border-radius: 40px; padding: 0.5rem 1.5rem; font-weight: 600; border: 2px solid white; }
+        .nav-btn:hover { background: transparent; color: white; }
+        .user-btn { background: rgba(255,255,255,0.2); color: white; border-radius: 40px; padding: 0.4rem 1.2rem; border: 1px solid rgba(255,255,255,0.5); }
+        .glass-card { background: var(--glass-bg); backdrop-filter: blur(12px); border-radius: 24px; padding: 1.5rem; box-shadow: 0 20px 40px -12px rgba(0,0,0,0.2); }
+        .table-custom { background: white; border-radius: 16px; overflow: hidden; }
+        .table-custom thead { background: var(--primary); color: white; }
+        .table-custom th { font-weight: 600; padding: 1rem; }
+        .table-custom tbody tr { transition: all 0.2s; }
+        .table-custom tbody tr:hover { background: rgba(255, 111, 60, 0.08); transform: scale(1.01); }
+        .badge-kategorija { background: var(--primary); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; }
+        .dostupno-badge { background: #28a745; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; }
+        .nedostupno-badge { background: #dc3545; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; }
+        footer { background: var(--primary); color: white; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'lista_jela' %}"><i class="bi bi-egg-fried me-2"></i>Smart Menu</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto gap-2">
+                <li class="nav-item"><a class="nav-link nav-btn active" href="{% url 'lista_jela' %}">🍽️ Lista Jela</a></li>
+                <li class="nav-item"><a class="nav-link nav-btn" href="{% url 'dodaj_jelo' %}">➕ Dodaj Jelo</a></li>
+                <li class="nav-item"><a class="nav-link nav-btn" href="{% url 'ai' %}">🤖 AI Chatbot</a></li>
+            </ul>
+            <div class="d-flex" id="userCorner">
+                {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="btn user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-1"></i>{{ user.username }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="logoutUser(event)">Odjava</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="d-flex gap-2">
+                    <a href="{% url 'login' %}" class="btn user-btn">Prijava</a>
+                    <a href="{% url 'register' %}" class="btn user-btn">Registracija</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal (isti) -->
+
+<main class="container my-5 flex-grow-1">
+    <div class="glass-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-list-ul me-2" style="color: var(--primary);"></i>Lista Jela</h2>
+            <span class="badge bg-primary-custom fs-6" style="background: var(--primary);">Ukupno: {{ jela|length }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>Naziv Jela</th>
+                        <th>Kategorija</th>
+                        <th>Opis</th>
+                        <th>Cena</th>
+                        <th>Dostupnost</th>
+                        <th>Sastojci</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for jelo in jela %}
+                    <tr>
+                        <td><strong>{{ jelo.naziv_jela }}</strong></td>
+                        <td><span class="badge-kategorija">{{ jelo.kategorija }}</span></td>
+                        <td>{{ jelo.opis|truncatechars:80 }}</td>
+                        <td>{{ jelo.cena }} RSD</td>
+                        <td>
+                            {% if jelo.dostupno %}
+                                <span class="dostupno-badge">Dostupno</span>
+                            {% else %}
+                                <span class="nedostupno-badge">Nedostupno</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="small">
+                                {% for s in jelo.sastojci.all %}
+                                    • {{ s.naziv_sastojka }}<br>
+                                {% empty %}
+                                    Nema sastojaka
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center py-4">Nema unetih jela</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer class="text-center py-3">
+    <div class="container"><small>© 2026 Smart Menu</small></div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // JavaScript (logout, modal, hover efekti)
+    // ...
+</script>
+</body>
+</html>

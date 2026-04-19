@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prijava - Smart Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #ff6f3c;
+            --primary-dark: #e85d2c;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+        }
+        body {
+            background-image: url("https://img.freepik.com/free-photo/top-view-fast-food-mix-mozzarella-sticks-club-sandwich-hamburger-mushroom-pizza-caesar-shrimp-salad-french-fries-ketchup-mayo-cheese-sauces-table_141793-3998.jpg?semt=ais_hybrid&w=740&q=80");
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar-custom { background: rgba(255, 111, 60, 0.85); backdrop-filter: blur(12px); }
+        .navbar-brand { color: white !important; font-weight: 700; font-size: 1.8rem; }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        .btn-primary-custom {
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.9rem;
+            border-radius: 60px;
+            box-shadow: 0 8px 16px rgba(255, 111, 60, 0.3);
+            transition: all 0.3s;
+        }
+        .btn-primary-custom:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(255, 111, 60, 0.25);
+        }
+        footer { background: var(--primary); color: white; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'lista_jela' %}"><i class="bi bi-egg-fried me-2"></i>Smart Menu</a>
+    </div>
+</nav>
+
+<main class="container my-5 flex-grow-1">
+    <div class="glass-card">
+        <div class="text-center mb-4">
+            <i class="bi bi-person-circle" style="font-size: 3rem; color: var(--primary);"></i>
+            <h2 class="mt-2">Prijava</h2>
+            <p class="text-secondary">Dobrodošli nazad!</p>
+        </div>
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Korisničko ime</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-person"></i></span>
+                    <input type="text" class="form-control border-start-0" name="username" placeholder="Unesite korisničko ime" required>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Lozinka</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control border-start-0" name="password" placeholder="••••••••" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary-custom w-100">Prijavi se</button>
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+        {% if messages %}
+        <div class="mt-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="text-center mt-4">
+            <span class="text-secondary">Nemate nalog?</span>
+            <a href="{% url 'register' %}" class="fw-bold text-decoration-none" style="color: var(--primary);">Registrujte se</a>
+        </div>
+    </div>
+</main>
+
+<footer class="text-center py-3">
+    <div class="container"><small>© 2026 Smart Menu</small></div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Fokus na username
+    document.querySelector('input[name="username"]').focus();
+</script>
+</body>
+</html>
